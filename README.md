@@ -1,4 +1,8 @@
 # 🔐 Active Directory Security Lab
+![Windows Server](https://img.shields.io/badge/Windows%20Server-2025-blue)
+![Windows 11](https://img.shields.io/badge/Windows-11-blue)
+![VMware](https://img.shields.io/badge/VMware-Workstation-blue)
+![Active Directory](https://img.shields.io/badge/Active%20Directory-AD%20DS-blue)
 
 A hands-on Active Directory laboratory environment built using **VMware Workstation, Windows Server 2025, and Windows 11**.
 
