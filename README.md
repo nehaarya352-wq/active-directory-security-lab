@@ -1,2 +1,5 @@
-# active-directory-security-lab
-Enterprise-style Active Directory lab built in VMware with PDC, ADC, RODC, DNS, DHCP, Group Policy, and a Windows 11 domain-joined client.
+🔐 Active Directory Security Lab
+
+A hands-on enterprise-style Active Directory laboratory environment built using VMware, Windows Server and Windows 11.
+
+The lab demonstrates the deployment and administration of a multi-domain-controller Active Directory environment including a Primary Domain Controller, Additional Domain Controller, Read-Only Domain Controller, DNS, DHCP, Group Policy, user and group management, domain joining, verification and disaster recovery concepts.
