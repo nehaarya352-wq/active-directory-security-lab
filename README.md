@@ -190,7 +190,6 @@ nslookup cyberlab.local
 ## DHCP
 
 A DHCP scope named:
-
 ```text
 CyberLab_Internal_Scope
 ```
