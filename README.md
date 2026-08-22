@@ -1,355 +1,478 @@
 # 🔐 Active Directory Security Lab
 
-A hands-on enterprise-style Active Directory laboratory environment built using VMware, Windows Server, and Windows 11.
+A hands-on Active Directory laboratory environment built using **VMware Workstation, Windows Server 2025, and Windows 11**.
 
-This project demonstrates the deployment, configuration, administration, and testing of an Active Directory environment with multiple domain controllers, DNS, DHCP, Organizational Units, users and groups, Group Policy, a domain-joined Windows 11 client, and disaster recovery concepts.
+This project demonstrates the implementation of a multi-server Active Directory environment using the domain **`cyberlab.local`**, including a Primary Domain Controller (PDC), Additional Domain Controller (ADC), Read-Only Domain Controller (RODC), DNS, DHCP, Organizational Units, users and groups, domain joining, authentication, replication, and system verification.
 
----
-
-## 📌 Project Overview
-
-The objective of this project was to design and implement a functional Active Directory environment in a virtualized VMware laboratory.
-
-The lab simulates a small enterprise network using the domain:
-
-`cyberlab.local`
-
-The environment includes a Primary Domain Controller, Additional Domain Controller, Read-Only Domain Controller, Windows 11 client, DNS, DHCP, Active Directory Domain Services, and Group Policy.
-
-The project also included testing and verification of domain services, client connectivity, authentication, replication, and Active Directory recovery concepts.
+The entire environment was created inside an isolated VMware virtual network for educational and practical cybersecurity learning.
 
 ---
 
-## 🎯 Objectives
+## 🎯 Project Objectives
 
-* Deploy Windows Server in a VMware virtual environment
-* Install and configure Active Directory Domain Services
-* Create and configure the `cyberlab.local` domain
+The main objectives of this project were to:
+
+* Build an Active Directory environment using VMware
+* Configure a VMware Host-Only virtual network
+* Install and configure Windows Server 2025
+* Deploy Active Directory Domain Services (AD DS)
+* Create the `cyberlab.local` domain
 * Configure a Primary Domain Controller
 * Configure an Additional Domain Controller
 * Configure a Read-Only Domain Controller
-* Configure DNS for Active Directory
-* Configure DHCP for automatic IP assignment
-* Create Organizational Units, users, and security groups
-* Configure and apply Group Policies
+* Configure DNS for the Active Directory environment
+* Configure DHCP for client IP address assignment
+* Create Organizational Units, users, and groups
 * Join a Windows 11 client to the domain
 * Verify domain authentication and connectivity
-* Understand Active Directory replication
-* Explore FSMO roles and disaster recovery concepts
-* Document the complete laboratory environment
+* Verify Active Directory health
+* Verify Active Directory replication
+* Understand the communication and replication structure between domain controllers
 
 ---
 
 ## 🏗️ Lab Architecture
 
-                         cyberlab.local
-                              │
-                     ┌────────┴────────┐
-                     │                 │
-               ┌─────▼─────┐     ┌────▼─────┐
-               │  SRV-PDC  │     │  SRV-ADC │
-               │  PDC      │◄───►│  ADC     │
-               │ .10.10    │     │ .10.11   │
-               └─────┬─────┘     └────┬─────┘
-                     │                 │
-                     │           ┌─────▼─────┐
-                     │           │ SRV-RODC  │
-                     │           │   RODC    │
-                     │           │  .10.12   │
-                     │           └───────────┘
-                     │
-                Virtual Network
-                     │
-              ┌──────▼─────────┐
-              │ WIN11-CLIENT   │
-              │ Domain Joined  │
-              │ .10.100        │
-              └────────────────┘
+The laboratory uses a VMware Host-Only network named **VMnet1**.
 
+### Active Directory Hierarchy
+
+![Active Directory Hierarchy](diagrams/01-active-directory-hierarchy.png)
+
+The Active Directory environment uses the domain:
+
+```text
+cyberlab.local
+```
+
+The logical hierarchy includes organizational areas such as:
+
+* IT Department
+* Security Operations
+* Administration
+* Groups
+
+The Active Directory environment also contains organizational units for departments, users, computers, and servers.
+
+### Network Topology
+
+![Network Topology](diagrams/02-network-topology.png)
+
+The virtual network connects the domain controllers and Windows 11 client within the VMware laboratory environment.
 
 ---
 
 ## 💻 Lab Environment
 
-| Component       | Configuration                     |
-| --------------- | --------------------------------- |
-| Hypervisor      | VMware                            |
-| Domain          | `cyberlab.local`                  |
-| PDC             | `SRV-PDC`                         |
-| PDC IP          | `192.168.10.10`                   |
-| ADC             | `SRV-ADC`                         |
-| ADC IP          | `192.168.10.11`                   |
-| RODC            | `SRV-RODC`                        |
-| RODC IP         | `192.168.10.12`                   |
-| Windows Client  | Windows 11                        |
-| Client Hostname | `WIN11-CLIENT`                    |
-| Client IP       | `192.168.10.100`                  |
-| Subnet Mask     | `255.255.255.0`                   |
-| Gateway         | `192.168.10.1`                    |
-| DHCP Range      | `192.168.10.100 – 192.168.10.200` |
-
-> All systems were configured inside an isolated virtual laboratory environment.
-
----
-
-## 🛠️ Technologies Used
-
-* VMware
-* Windows Server
-* Windows 11
-* Active Directory Domain Services
-* Active Directory Users and Computers
-* DNS
-* DHCP
-* Group Policy
-* Organizational Units
-* Security Groups
-* Domain Controllers
-* Read-Only Domain Controller
-* FSMO Roles
-* Windows Administrative Tools
+| Component               | Configuration                     |
+| ----------------------- | --------------------------------- |
+| Virtualization          | VMware Workstation                |
+| Operating System        | Windows Server 2025               |
+| Client Operating System | Windows 11                        |
+| Active Directory Domain | `cyberlab.local`                  |
+| Virtual Network         | VMware VMnet1                     |
+| Network Type            | Host-Only                         |
+| Network                 | `192.168.10.0/24`                 |
+| Subnet Mask             | `255.255.255.0`                   |
+| PDC                     | `SRV-PDC`                         |
+| PDC IP                  | `192.168.10.10`                   |
+| ADC                     | `SRV-ADC`                         |
+| ADC IP                  | `192.168.10.11`                   |
+| RODC                    | `SRV-RODC`                        |
+| RODC IP                 | `192.168.10.12`                   |
+| Windows 11 Client       | `WIN11-CLIENT`                    |
+| DHCP Scope              | `192.168.10.100 – 192.168.10.200` |
 
 ---
 
-## 🔧 Active Directory Components
+## 🌐 VMware Network Configuration
 
-### Primary Domain Controller
+The Active Directory environment was created on a VMware **Host-Only network**.
 
-The Primary Domain Controller was configured as the main Active Directory server for the `cyberlab.local` domain.
-
-Responsibilities included:
-
-* Active Directory Domain Services
-* DNS
-* DHCP
-* Domain authentication
-* User and group management
-* Group Policy administration
-* Directory services
-
----
-
-### Additional Domain Controller
-
-An Additional Domain Controller was deployed to provide redundancy and demonstrate Active Directory replication.
-
-`SRV-ADC`
-
-IP address:
-
-`192.168.10.11`
-
-The ADC allows the environment to continue providing directory services if the primary controller becomes unavailable.
-
----
-
-### Read-Only Domain Controller
-
-A Read-Only Domain Controller was configured as part of the laboratory environment.
-
-`SRV-RODC`
-
-IP address:
-
-`192.168.10.12`
-
-The RODC provides a read-only copy of the Active Directory database and is useful for scenarios where additional domain services are required while reducing the risk associated with writable domain controllers.
-
----
-
-## 🌐 Network Configuration
-
-The laboratory uses the following private network:
+The configured network was:
 
 ```text
-Network:       192.168.10.0/24
-Subnet Mask:   255.255.255.0
-Gateway:       192.168.10.1
+VMnet1
+Network: 192.168.10.0/24
+Subnet Mask: 255.255.255.0
 ```
 
-### Static Server Addresses
+This isolated virtual network allows the laboratory machines to communicate with each other without exposing the lab directly to the external network.
+
+### Network Configuration Evidence
+
+![VMware VMnet1 Configuration](screenshots/01-pdc/01-vmnet1-host-only-network.png)
+
+---
+
+# 🖥️ Primary Domain Controller
+
+The first server was configured as the Primary Domain Controller for the `cyberlab.local` domain.
+
+### Server
 
 ```text
-SRV-PDC      → 192.168.10.10
-SRV-ADC      → 192.168.10.11
-SRV-RODC     → 192.168.10.12
+Hostname: SRV-PDC
+IP Address: 192.168.10.10
+Domain: cyberlab.local
 ```
 
-### DHCP
+Windows Server 2025 was installed and configured with a static IPv4 address before Active Directory services were deployed.
 
-The DHCP scope was configured to provide client addresses within:
+### Windows Server 2025
+
+![Windows Server 2025](screenshots/01-pdc/02-srv-pdc-windows-server-2025.png)
+
+### Hostname and Domain Configuration
+
+![PDC Hostname and Domain](screenshots/01-pdc/03-srv-pdc-hostname-domain.png)
+
+### Static IP Configuration
+
+![PDC Static IP](screenshots/01-pdc/04-srv-pdc-static-ip.png)
+
+---
+
+# 🏢 Active Directory Domain Services
+
+Active Directory Domain Services was installed on `SRV-PDC`.
+
+The domain created for the laboratory was:
 
 ```text
-192.168.10.100
-        ↓
-192.168.10.200
+cyberlab.local
 ```
 
-The Windows 11 client received its network configuration through DHCP.
+The AD DS configuration was verified using the Active Directory Domain Services Configuration Wizard.
+
+![AD DS Configuration](screenshots/01-pdc/06-srv-pdc-ad-ds-promotion.png)
 
 ---
 
-## 👥 Active Directory Structure
+# 🗂️ Active Directory Organizational Structure
 
-The domain was organized using Active Directory Users and Computers.
+Active Directory Users and Computers was used to create and manage the organizational structure.
 
-The laboratory included:
+The laboratory includes Organizational Units for areas such as:
 
-* Organizational Units
-* Users
-* Security Groups
-* Computer accounts
-* Domain administrators
-* Domain users
+* IT
+* HR
+* Finance
+* Computer OU
+* Servers
 
-This structure was used to demonstrate centralized identity and access management.
+Users and groups were provisioned within the Active Directory environment.
 
----
-
-## 🔐 Group Policy
-
-Group Policy was used to demonstrate centralized management of Windows systems within the domain.
-
-The project included configuration and testing of domain-level policies and security settings.
-
-Group Policy provides administrators with a centralized method of applying configuration and security controls to users and computers.
+![Active Directory Users and Groups](screenshots/01-pdc/08-active-directory-users-groups.png)
 
 ---
 
-## 🖥️ Windows 11 Domain Client
+# 🌐 DNS and DHCP
 
-A Windows 11 virtual machine was configured as a domain client.
+DNS and DHCP were configured as part of the Active Directory laboratory.
 
-Hostname:
+## DNS
 
-`WIN11-CLIENT`
+DNS provides name resolution required for the Active Directory domain.
 
-The client was successfully joined to:
+The domain used for the lab is:
 
-`cyberlab.local`
-
-After joining the domain, domain authentication and connectivity were verified.
-
----
-
-## 🧪 Testing & Verification
-
-The laboratory environment was tested to verify:
-
-* Domain connectivity
-* DNS resolution
-* DHCP address assignment
-* Domain membership
-* User authentication
-* Active Directory functionality
-* Domain controller communication
-* Replication concepts
-* Group Policy application
-* Windows client connectivity
-
-Example verification commands included:
-
-```powershell
-ipconfig /all
+```text
+cyberlab.local
 ```
 
-```powershell
+DNS resolution was later verified from the Windows 11 client using:
+
+```cmd
 nslookup cyberlab.local
 ```
 
-```powershell
+## DHCP
+
+A DHCP scope named:
+
+```text
+CyberLab_Internal_Scope
+```
+
+was configured on `SRV-PDC`.
+
+The configured address range was:
+
+```text
+192.168.10.100 – 192.168.10.200
+```
+
+![DHCP Scope](screenshots/01-pdc/07-srv-pdc-dhcp-scope.png)
+
+---
+
+# 🖥️ Additional Domain Controller
+
+A second Windows Server was configured as an Additional Domain Controller for the existing:
+
+```text
+cyberlab.local
+```
+
+### Server
+
+```text
+Hostname: SRV-ADC
+IP Address: 192.168.10.11
+```
+
+Before configuring the Additional Domain Controller, connectivity with the Primary Domain Controller was verified.
+
+![ADC Connectivity Test](screenshots/02-adc/09-srv-adc-ping-pdc.png)
+
+The server was then configured using the AD DS Configuration Wizard with the option to:
+
+```text
+Add a domain controller to an existing domain
+```
+
+![ADC Domain Controller Configuration](screenshots/02-adc/10-srv-adc-domain-controller-promotion.png)
+
+---
+
+# 🔒 Read-Only Domain Controller
+
+A Read-Only Domain Controller was configured as part of the Active Directory environment.
+
+### Server
+
+```text
+Hostname: SRV-RODC
+IP Address: 192.168.10.12
+```
+
+The Password Replication Policy was configured to control which accounts are allowed or denied from having their credentials cached on the RODC.
+
+![RODC Password Replication Policy](screenshots/03-rodc/11-srv-rodc-password-replication-policy.png)
+
+---
+
+# 💻 Windows 11 Domain Client
+
+A Windows 11 virtual machine was configured as the domain client.
+
+### Client
+
+```text
+Hostname: WIN11-CLIENT
+Domain: cyberlab.local
+```
+
+The client was successfully joined to the Active Directory domain.
+
+![Domain Join Successful](screenshots/04-domain-client/12-domain-join-success.png)
+
+After joining the domain, the client was able to authenticate using a domain account.
+
+![Windows 11 Domain Login](screenshots/04-domain-client/13-win11-domain-login.png)
+
+---
+
+# 🧪 Network and Domain Verification
+
+Multiple tests were performed to verify that the Active Directory environment was functioning correctly.
+
+## IP Configuration and Connectivity
+
+The Windows 11 client was checked using:
+
+```cmd
+ipconfig /all
+```
+
+Connectivity with the Primary Domain Controller was tested using:
+
+```cmd
+ping 192.168.10.10
+```
+
+![Windows 11 IP Configuration and Ping](screenshots/04-domain-client/14-win11-ipconfig-ping.png)
+
+---
+
+## DNS Resolution
+
+DNS resolution for the Active Directory domain was tested using:
+
+```cmd
+nslookup cyberlab.local
+```
+
+![DNS Resolution Test](screenshots/04-domain-client/15-win11-nslookup.png)
+
+---
+
+## Domain Authentication
+
+The authenticated domain identity was verified using:
+
+```cmd
 whoami
 ```
 
-```powershell
-gpresult /r
+The logon server was identified using:
+
+```cmd
+echo %logonserver%
 ```
 
----
+The test confirmed authentication through the Active Directory environment.
 
-## 🚨 Disaster Recovery & FSMO Concepts
-
-The project also explored Active Directory disaster recovery concepts and Flexible Single Master Operations (FSMO) roles.
-
-The purpose was to understand:
-
-* FSMO role ownership
-* Domain Controller failure scenarios
-* Role transfer
-* Role seizure concepts
-* Domain availability
-* Active Directory recovery considerations
-
-This helped demonstrate how Active Directory environments can be designed with redundancy and recovery in mind.
+![Domain Authentication Verification](screenshots/04-domain-client/16-win11-domain-authentication.png)
 
 ---
 
-## 📸 Screenshots
+# 🩺 Domain Controller Health Verification
 
-Screenshots documenting the implementation will be added to this repository.
+The health of the Primary Domain Controller was tested using:
 
-Planned documentation includes:
+```cmd
+dcdiag /v
+```
 
-* VMware virtual machines
-* Windows Server installation
+The diagnostic results showed successful test execution for the domain controller.
+
+![DCDIAG Verification](screenshots/05-testing/17-srv-pdc-dcdiag.png)
+
+---
+
+# 🔄 Active Directory Replication Verification
+
+Replication between domain controllers was verified using:
+
+```cmd
+repadmin /showrepl
+```
+
+The output showed successful inbound replication relationships across the Active Directory partitions.
+
+![Active Directory Replication](screenshots/05-testing/18-srv-adc-repadmin.png)
+
+---
+
+# 🔗 Active Directory Sites and Services
+
+Active Directory Sites and Services was used to inspect the replication topology.
+
+The console showed NTDS Settings and automatically generated replication connection objects between:
+
+```text
+SRV-PDC
+SRV-ADC
+SRV-RODC
+```
+
+![Active Directory Sites and Services](screenshots/05-testing/19-active-directory-sites-services.png)
+
+---
+
+# 📊 Testing Summary
+
+| Test                     | Tool / Command                      | Purpose                              |
+| ------------------------ | ----------------------------------- | ------------------------------------ |
+| Network configuration    | `ipconfig /all`                     | Verify IP and network settings       |
+| Network connectivity     | `ping`                              | Verify communication between systems |
+| DNS resolution           | `nslookup`                          | Verify `cyberlab.local` resolution   |
+| Domain authentication    | `whoami`                            | Verify domain identity               |
+| Logon server             | `echo %logonserver%`                | Identify the authentication server   |
+| Domain Controller health | `dcdiag /v`                         | Check domain controller health       |
+| AD replication           | `repadmin /showrepl`                | Verify replication                   |
+| Replication topology     | Active Directory Sites and Services | Inspect replication connections      |
+
+---
+
+# 📸 Project Evidence
+
+The complete project evidence is available in the repository under:
+
+```text
+screenshots/
+```
+
+The screenshots document:
+
+* VMware network configuration
+* Windows Server 2025 installation
+* PDC configuration
+* Static IP configuration
+* Active Directory Domain Services
+* DHCP configuration
+* Active Directory users and organizational structure
+* ADC configuration
+* RODC Password Replication Policy
+* Windows 11 domain joining
+* Domain authentication
+* DNS resolution
+* Domain Controller diagnostics
+* Active Directory replication
+* Active Directory Sites and Services
+
+---
+
+# 🧠 Key Skills Demonstrated
+
+This project provided hands-on experience with:
+
+* VMware Workstation
+* Windows Server 2025
+* Windows 11
 * Active Directory Domain Services
 * Domain Controller configuration
 * Active Directory Users and Computers
-* DNS configuration
-* DHCP configuration
 * Organizational Units
-* Users and Groups
-* Group Policy
-* Windows 11 domain joining
-* Domain verification
-* Testing and troubleshooting
-
----
-
-## 🧠 Key Learnings
-
-Through this project, I gained practical experience with:
-
-* Windows Server administration
-* Active Directory architecture
-* Domain Controller deployment
-* Identity and access management
-* DNS and DHCP
-* User and group administration
-* Group Policy
+* User and group management
+* DNS
+* DHCP
+* Primary Domain Controller
+* Additional Domain Controller
+* Read-Only Domain Controller
+* Password Replication Policy
 * Domain joining
+* Windows domain authentication
 * Active Directory replication
-* RODC architecture
-* FSMO roles
-* Virtualized enterprise environments
-* Troubleshooting Windows domain services
+* Active Directory Sites and Services
+* Network troubleshooting
+* Domain Controller health diagnostics
 
 ---
 
-## 🔮 Future Improvements
+# 📚 What I Learned
 
-Future versions of this laboratory could include:
+Through this laboratory project, I developed practical understanding of how an enterprise-style Windows domain environment can be deployed and managed.
 
-* SIEM integration using Wazuh
-* Windows event log monitoring
+The project helped me understand the relationship between **DNS, DHCP, Active Directory, Domain Controllers, Windows clients, authentication, and replication**.
+
+I also gained practical experience troubleshooting network connectivity and validating Active Directory functionality using built-in Windows tools and commands.
+
+---
+
+# 🔮 Future Improvements
+
+Possible future additions to this laboratory include:
+
 * Active Directory security auditing
-* PowerShell automation
-* Advanced Group Policy hardening
-* Vulnerability assessment
-* Kerberos security testing
-* BloodHound-based AD security analysis
-* Centralized logging
-* Detection and response scenarios
+* Windows event log monitoring
+* SIEM integration
+* PowerShell-based administration
+* Advanced Active Directory security testing
+* Security monitoring and detection scenarios
+* Vulnerability assessment of the laboratory environment
 
 ---
 
-## 👩‍💻 Author
+# 👩‍💻 Author
 
 **Neha**
 
 B.Sc. IT | Cybersecurity & Ethical Hacking
 
-Interested in:
+Areas of interest:
 
 * Cybersecurity
 * Ethical Hacking
@@ -362,6 +485,6 @@ Interested in:
 
 ## ⚠️ Disclaimer
 
-This project was created for educational purposes in an isolated virtual laboratory environment.
+This project was created for educational purposes inside a controlled virtual laboratory environment.
 
-All security testing and experimentation should be performed only on systems for which you have explicit authorization.
+All testing and security experimentation should be performed only on systems for which you have permission or authorization.
