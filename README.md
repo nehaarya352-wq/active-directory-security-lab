@@ -30,14 +30,22 @@ The main objectives of this project were to:
 * Understand the communication and replication structure between domain controllers
 
 ---
-## 🛠️ Technologies
+## 🛠️ Technologies Used
 
-![VMware](https://img.shields.io/badge/VMware-Workstation-blue)
-![Windows Server](https://img.shields.io/badge/Windows%20Server-2025-blue)
-![Windows 11](https://img.shields.io/badge/Windows-11-blue)
-![Active Directory](https://img.shields.io/badge/Active%20Directory-AD%20DS-blue)
-![DNS](https://img.shields.io/badge/Network-DNS-blue)
-![DHCP](https://img.shields.io/badge/Network-DHCP-blue)
+| Technology                               | Purpose                                                  |
+| ---------------------------------------- | -------------------------------------------------------- |
+| **VMware Workstation**                   | Virtualization and isolated laboratory network           |
+| **Windows Server 2025**                  | Active Directory server infrastructure                   |
+| **Active Directory Domain Services**     | Domain, authentication, and directory management         |
+| **DNS**                                  | Name resolution for the `cyberlab.local` domain          |
+| **DHCP**                                 | Automatic IP address assignment to clients               |
+| **Windows 11**                           | Domain-joined client system                              |
+| **Active Directory Users and Computers** | Management of users, computers, and Organizational Units |
+| **Active Directory Sites and Services**  | Viewing Active Directory replication topology            |
+| **DCDIAG**                               | Domain Controller health diagnostics                     |
+| **REPADMIN**                             | Active Directory replication verification                |
+| **Command Prompt**                       | Network and domain troubleshooting                       |
+
 
 ---
 ## 🏗️ Lab Architecture
