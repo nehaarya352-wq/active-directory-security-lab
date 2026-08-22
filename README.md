@@ -30,7 +30,16 @@ The main objectives of this project were to:
 * Understand the communication and replication structure between domain controllers
 
 ---
+## 🛠️ Technologies
 
+![VMware](https://img.shields.io/badge/VMware-Workstation-blue)
+![Windows Server](https://img.shields.io/badge/Windows%20Server-2025-blue)
+![Windows 11](https://img.shields.io/badge/Windows-11-blue)
+![Active Directory](https://img.shields.io/badge/Active%20Directory-AD%20DS-blue)
+![DNS](https://img.shields.io/badge/Network-DNS-blue)
+![DHCP](https://img.shields.io/badge/Network-DHCP-blue)
+
+---
 ## 🏗️ Lab Architecture
 
 The laboratory uses a VMware Host-Only network named **VMnet1**.
